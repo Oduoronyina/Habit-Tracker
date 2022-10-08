@@ -33,7 +33,7 @@ jobs:
     #     cd ..
     #     zip -r app.ipa Payload
       - run: flutter format --set-exit-if-changed .
-      - run: flutter analyze .
+    #  - run: flutter analyze .
       - run: flutter build apk --debug --split-per-abi
       - uses: actions/upload-artifact@v1
         with:
