@@ -1,0 +1,45 @@
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+
+  push:
+    branches:
+      - main
+      - master
+      - develop
+name: Habit Tracker CI
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '12.x'
+      - uses: subosito/flutter-action@v1
+        with:
+          flutter-version: '3.3.0'
+          channel: 'stable'
+      - run: flutter pub get
+    # - run: flutter test
+    # - run: |
+    #     flutter build ios --no-codesign
+    #     cd build/ios/iphoneos
+    #     mkdir Payload
+    #     cd Payload
+    #     ln -s ../Runner.app
+    #     cd ..
+    #     zip -r app.ipa Payload
+      - run: flutter format --set-exit-if-changed .
+      - run: flutter analyze .
+      - run: flutter build apk --debug --split-per-abi
+      - uses: actions/upload-artifact@v1
+        with:
+          name: release-apk
+          path: build/app/outputs/apk/release/app-release.apk
+        # artifacts: build/app/outputs/apk/debug/*,build/ios/iphoneos/app.ipa"  
+          artifacts: "buildapp/outputs/apk/debug/*"
+          tag: v1.0.${{ github.run_number }}
+          token: ${{ secrets.FLUTTERAPPS }}
